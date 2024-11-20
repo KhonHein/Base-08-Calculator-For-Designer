@@ -1,4 +1,8 @@
-# Welcome to your Expo app 👋
+# Base 08 Calculator 
+# This Calculator is only for designer to calculate address feet unit
+# Don't use in business such as cash , money, amount, price, cost, bill , 
+# 0.4 + 0.4 = 1 (base 0.8)
+
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
