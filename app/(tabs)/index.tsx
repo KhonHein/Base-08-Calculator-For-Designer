@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     backgroundColor: "black",
+  
   },
   statusContainer: {
     width: "100%",
@@ -193,6 +194,7 @@ const styles = StyleSheet.create({
   calculator: {
     flex: 1,
     justifyContent: "flex-end",
+    marginBottom:10,
   },
   degitContainer: {
     flexDirection: "row",

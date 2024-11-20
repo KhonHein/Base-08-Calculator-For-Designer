@@ -143,8 +143,9 @@ export default function HomeScreen() {
           editable={false}
         />
       </View>
-      <View>
-        <ThemedText style={{color:'yellow'}}>Inches Designer Calculator</ThemedText>
+      <View style={styles.warning}>
+        <ThemedText style={{color:'red'}}>Don't Use!</ThemedText>
+        <ThemedText style={{color:'red'}}>This Is For Only Inches Designer!</ThemedText>
       </View>
       <View style={styles.calculator}>
         {[row1, row2, row3, row4, row5].map((row, rowIndex) => (
@@ -172,7 +173,15 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
-
+  warning:{
+    justifyContent:'center',
+    alignItems:'center',
+    width:350,
+    height:100,
+    backgroundColor:'white',
+    borderRadius:10,
+    margin:'auto'
+  },
   input: {
     height: 60,
     width: "90%",
@@ -188,6 +197,7 @@ const styles = StyleSheet.create({
   calculator: {
     flex: 1,
     justifyContent: "flex-end",
+    marginBottom:10,
   },
   degitContainer: {
     flexDirection: "row",
