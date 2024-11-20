@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet, TextInput, View } from "react-native";
 import { row1, row2, row3, row4, row5 } from "@/assets/data";
 import Button from "@/components/ui/Button";
 import { useRouter } from "expo-router";
+import { ThemedText } from "@/components/ThemedText";
 
 interface Format {
   first: string; // Track as strings to handle decimal inputs
@@ -12,12 +13,7 @@ interface Format {
 }
 
 export default function HomeScreen() {
-  const defaultFormat: Format = {
-    first: "0",
-    status: "",
-    second: "",
-    isDecimal: false,
-  };
+  const defaultFormat: Format = { first: "0", status: "", second: "", isDecimal: false };
   const [format, setFormat] = useState<Format>(defaultFormat);
   const [display, setDisplay] = useState("0"); // Displayed value for operations
   const [degisnFeet, setDegisnFeet] = useState("0"); // Designer feet result display
@@ -26,15 +22,11 @@ export default function HomeScreen() {
   const handlePress = (value: string | number) => {
     if (typeof value === "number") {
       if (!format.status) {
-        const newFirst = format.isDecimal
-          ? format.first + value
-          : (parseFloat(format.first) * 10 + value).toString();
+        const newFirst = format.isDecimal ? format.first + value : (parseFloat(format.first) * 10 + value).toString();
         setFormat({ ...format, first: newFirst });
         setDisplay(newFirst);
       } else {
-        const newSecond = format.isDecimal
-          ? format.second + value
-          : (parseFloat(format.second || "0") * 10 + value).toString();
+        const newSecond = format.isDecimal ? format.second + value : (parseFloat(format.second || "0") * 10 + value).toString();
         setFormat({ ...format, second: newSecond });
         setDisplay(`${format.first} ${format.status} ${newSecond}`);
       }
@@ -44,18 +36,10 @@ export default function HomeScreen() {
         case ".":
           if (!format.isDecimal) {
             if (!format.status) {
-              setFormat({
-                ...format,
-                first: format.first + ".",
-                isDecimal: true,
-              });
+              setFormat({ ...format, first: format.first + ".", isDecimal: true });
               setDisplay(format.first + ".");
             } else {
-              setFormat({
-                ...format,
-                second: format.second + ".",
-                isDecimal: true,
-              });
+              setFormat({ ...format, second: format.second + ".", isDecimal: true });
               setDisplay(`${format.first} ${format.status} ${format.second}.`);
             }
           }
@@ -103,9 +87,12 @@ export default function HomeScreen() {
 
   const calculateResult = () => {
     let result = 0;
-    const firstNum = parseFloat(format.first);
-    const secondNum = parseFloat(format.second || "0");
-
+  
+    // Convert both numbers, interpreting decimals in base-8
+    const firstNum = parseDesignerDecimal(format.first);
+    const secondNum = parseDesignerDecimal(format.second || "0");
+  
+    // Perform calculation based on selected operator
     switch (format.status) {
       case "+":
         result = firstNum + secondNum;
@@ -117,27 +104,34 @@ export default function HomeScreen() {
         result = firstNum * secondNum;
         break;
       case "÷":
-        result = secondNum !== 0 ? firstNum / secondNum : NaN; // Avoid division by zero
+        result = secondNum !== 0 ? firstNum / secondNum : NaN;
         break;
       default:
         return;
     }
-
-    const formattedResult =
-      result % 1 !== 0 ? result.toFixed(3) : result.toString();
-    setFormat({
-      first: formattedResult,
-      status: "",
-      second: "",
-      isDecimal: false,
-    });
-    setDisplay(formattedResult);
+  
+    // Convert the result back to designer format for display
+    const formattedResult = formatDesignerDecimal(result);
+    
+    setDisplay(`${format.first} ${format.status} ${format.second} = ${formattedResult}`);
+    setFormat({ first: formattedResult, status: "", second: "", isDecimal: false });
+  };
+  
+  // Helper function to parse designer decimal in base-8
+  const parseDesignerDecimal = (value: string) => {
+    const [whole, fraction] = value.split(".");
+    const wholeNumber = parseInt(whole, 10);
+    const fractionNumber = fraction ? parseInt(fraction, 10) / 8 : 0;
+    return wholeNumber + fractionNumber;
+  };
+  
+  // Helper function to format result back to designer base-8 decimal
+  const formatDesignerDecimal = (value: number) => {
+    const whole = Math.floor(value);
+    const fraction = Math.round((value - whole) * 8);
+    return fraction === 0 ? `${whole}` : `${whole}.${fraction}`;
   };
 
-  const handleDegisnerFeet = (inches: number) => {
-    const designerInches = inches.toFixed(3); // Convert inches based on designer units
-    setDegisnFeet(designerInches);
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -149,7 +143,9 @@ export default function HomeScreen() {
           editable={false}
         />
       </View>
-
+      <View>
+        <ThemedText style={{color:'yellow'}}>Inches Designer Calculator</ThemedText>
+      </View>
       <View style={styles.calculator}>
         {[row1, row2, row3, row4, row5].map((row, rowIndex) => (
           <View key={rowIndex} style={styles.degitContainer}>
@@ -164,21 +160,19 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     justifyContent: "space-around",
     alignItems: "center",
     backgroundColor: "black",
   },
+  
   statusContainer: {
     width: "100%",
     alignItems: "center",
   },
-  displayContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
+
   input: {
     height: 60,
     width: "90%",
@@ -190,6 +184,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     margin: 5,
   },
+
   calculator: {
     flex: 1,
     justifyContent: "flex-end",
