@@ -43,14 +43,26 @@ export default function TabLayout() {
         }}
         
       />
-
       <Tabs.Screen
         name="recent"
         options={{
           title: "recent",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "sync-circle" : "sync-circle-outline"}
+              name={focused ? "refresh" : "refresh-sharp"}
+              //color={color}
+              style={focused?styles.warningIcon:{}}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="about"
+        options={{
+          title: "about",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "information-circle" : "information"}
               //color={color}
               style={focused?styles.warningIcon:{}}
             />
